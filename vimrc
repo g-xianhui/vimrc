@@ -14,12 +14,23 @@ set shiftwidth=4
 set noexpandtab
 set tags=./.tags;,.tags
 set undodir=~/.undodir
-runtime! ftplugin/man.vim
-autocmd BufReadPost * normal! g`"
+
+" 开启man功能
+runtime ftplugin/man.vim
+
+" reopening a file
+if has("autocmd")
+  au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+endif
 
 call plug#begin()
+" vim配色
 Plug 'bfrg/vim-cpp-modern'
+" 自动tags生成
 Plug 'ludovicchabant/vim-gutentags'
+" 函数查找、文件查找
+Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 call plug#end()
 
 " gutentags搜索工程目录的标志，碰到这些文件/目录名就停止向上一级目录递归 "
@@ -40,3 +51,26 @@ endif
 let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
 let g:gutentags_ctags_extra_args += ['--c++-kinds=+pxI']
 let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
+                       
+" 在 popup 窗口中预览结果
+let g:Lf_PreviewInPopup = 1
+" 预览代码
+let g:Lf_PreviewCode = 1
+let g:Lf_RootMarkers = ['.root', '.svn', '.git', '.project']
+let g:Lf_WorkingDirectoryMode = 'Ac'
+let g:Lf_CacheDirectory = expand('~/.vim/cache')
+let g:Lf_ShortcutF = "<Leader>f"
+let g:Lf_ShortcutB = "<Leader>bl"
+nnoremap <silent><Leader>p :LeaderfFunction!<CR>
+nnoremap <silent><Leader>d :LeaderfTag<CR>
+" 调用 ripgrep 查找字符串
+nnoremap <Leader>rg :Leaderf rg<Space>
+
+" GoTo code navigation.
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+xmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
