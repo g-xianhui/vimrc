@@ -14,6 +14,7 @@ set shiftwidth=4
 set noexpandtab
 set tags=./.tags;,.tags
 set undodir=~/.undodir
+set backspace=indent,eol,start
 
 " 开启man功能
 runtime ftplugin/man.vim
@@ -29,8 +30,8 @@ Plug 'bfrg/vim-cpp-modern'
 " 自动tags生成
 Plug 'ludovicchabant/vim-gutentags'
 " 函数查找、文件查找
-Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension', 'for': 'cpp' }
+Plug 'neoclide/coc.nvim', {'branch': 'release', 'for': 'cpp'}
 call plug#end()
 
 " gutentags搜索工程目录的标志，碰到这些文件/目录名就停止向上一级目录递归 "
