@@ -50,9 +50,6 @@ let g:gutentags_modules = []
 if executable('ctags')
 	let g:gutentags_modules += ['ctags']
 endif
-if executable('gtags-cscope') && executable('gtags')
-	let g:gutentags_modules += ['gtags_cscope']
-endif
 
 " 将自动生成的 tags 文件全部放入 ~/.cache/tags 目录中，避免污染工程目录 "
 let s:vim_tags = expand('~/.cache/tags')
@@ -74,6 +71,19 @@ let g:gutentags_ctags_extra_args += ['--output-format=e-ctags']
 let g:Lf_PreviewInPopup = 1
 " 预览代码
 let g:Lf_PreviewCode = 1
+let g:Lf_StlColorscheme = 'powerline'
+let g:Lf_PreviewResult = {
+        \ 'File': 0,
+        \ 'Buffer': 0,
+        \ 'Mru': 0,
+        \ 'Tag': 0,
+        \ 'BufTag': 1,
+        \ 'Function': 1,
+        \ 'Line': 1,
+        \ 'Colorscheme': 0,
+        \ 'Rg': 0,
+        \ 'Gtags': 0
+        \}
 let g:Lf_RootMarkers = ['.root', '.svn', '.git', '.project']
 let g:Lf_WorkingDirectoryMode = 'Ac'
 let g:Lf_CacheDirectory = expand('~/.vim/cache')
@@ -89,15 +99,13 @@ nnoremap <silent><Leader>d :LeaderfTag<CR>
 nnoremap <Leader>rg :Leaderf rg<Space>
 
 " 使用gtags进行索引查找
-" 不自动生成tags，而使用gutentags生成的tags
-let g:Lf_GtagsAutoGenerate = 0
-let g:Lf_GtagsGutentags = 1
-let g:gutentags_cache_dir = expand(g:Lf_CacheDirectory.'\.LfCache\gtags')
+" 自动生成gtags
+let g:Lf_GtagsAutoGenerate = 1
 let g:Lf_Gtagslabel = 'native-pygments'
 " \ + f + r 查找当前光标所在字符的所有引用
-noremap <leader>fr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
+noremap <leader>fr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump h", expand("<cword>"))<CR><CR>
 " \ + f + r 查找当前光标所在字符的所有定义
-noremap <leader>fd :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
+noremap <leader>fd :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump h", expand("<cword>"))<CR><CR>
 noremap <leader>fo :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
 noremap <leader>fn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
 noremap <leader>fp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
