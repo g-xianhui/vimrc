@@ -11,9 +11,12 @@ set autoindent
 set cindent
 set tabstop=4
 set shiftwidth=4
-set noexpandtab
+set expandtab
 set tags=./.tags;,.tags
-set undodir=~/.undodir
+" 启用持久性撤销
+set undofile
+" 编辑历史目录，需确保目录存在
+set undodir=~/.vim/undodir
 set backspace=indent,eol,start
 
 " 开启man功能
@@ -31,14 +34,25 @@ Plug 'bfrg/vim-cpp-modern'
 Plug 'ludovicchabant/vim-gutentags'
 " 函数查找、文件查找
 Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
+" 代码补全
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 call plug#end()
 
+" ====== gutentags =======
 " gutentags搜索工程目录的标志，碰到这些文件/目录名就停止向上一级目录递归 "
 let g:gutentags_project_root = ['.root', '.svn', '.git', '.project']
 
 " 所生成的数据文件的名称 "
 let g:gutentags_ctags_tagfile = '.tags'
+
+" 同时开启 ctags 和 gtags 支持：
+let g:gutentags_modules = []
+if executable('ctags')
+	let g:gutentags_modules += ['ctags']
+endif
+if executable('gtags-cscope') && executable('gtags')
+	let g:gutentags_modules += ['gtags_cscope']
+endif
 
 " 将自动生成的 tags 文件全部放入 ~/.cache/tags 目录中，避免污染工程目录 "
 let s:vim_tags = expand('~/.cache/tags')
@@ -52,7 +66,10 @@ endif
 let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
 let g:gutentags_ctags_extra_args += ['--c++-kinds=+pxI']
 let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
+
+let g:gutentags_ctags_extra_args += ['--output-format=e-ctags']
                        
+" ====== LeaderF =======
 " 在 popup 窗口中预览结果
 let g:Lf_PreviewInPopup = 1
 " 预览代码
@@ -60,18 +77,44 @@ let g:Lf_PreviewCode = 1
 let g:Lf_RootMarkers = ['.root', '.svn', '.git', '.project']
 let g:Lf_WorkingDirectoryMode = 'Ac'
 let g:Lf_CacheDirectory = expand('~/.vim/cache')
-let g:Lf_ShortcutF = "<Leader>f"
-let g:Lf_ShortcutB = "<Leader>bl"
+" ctrl-p开启文件查询
+let g:Lf_ShortcutF = "<c-p>"
+" ctrl-l开启buffer查找
+let g:Lf_ShortcutB = "<c-l>"
+" \ + p 开启函数查询（仅限当前文件）
 nnoremap <silent><Leader>p :LeaderfFunction!<CR>
+" \ + d 开启tag查找
 nnoremap <silent><Leader>d :LeaderfTag<CR>
-" 调用 ripgrep 查找字符串
+" 调用 ripgrep 全局查找字符串
 nnoremap <Leader>rg :Leaderf rg<Space>
 
-" GoTo code navigation.
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
+" 使用gtags进行索引查找
+" 不自动生成tags，而使用gutentags生成的tags
+let g:Lf_GtagsAutoGenerate = 0
+let g:Lf_GtagsGutentags = 1
+let g:gutentags_cache_dir = expand(g:Lf_CacheDirectory.'\.LfCache\gtags')
+let g:Lf_Gtagslabel = 'native-pygments'
+" \ + f + r 查找当前光标所在字符的所有引用
+noremap <leader>fr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
+" \ + f + r 查找当前光标所在字符的所有定义
+noremap <leader>fd :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
+noremap <leader>fo :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
+noremap <leader>fn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
+noremap <leader>fp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
 
-xmap <leader>f  <Plug>(coc-format-selected)
-nmap <leader>f  <Plug>(coc-format-selected)
+" ======= coc =======
+" 使用Tab和Shift-Tab选择补全
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+" 使用回车确认选择
+inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR>"
+
+" GoTo code navigation.
+" 暂不使用，有LeaderF和旧的ctags就够了
+" nmap <silent> gd <Plug>(coc-definition)
+" nmap <silent> gy <Plug>(coc-type-definition)
+" nmap <silent> gi <Plug>(coc-implementation)
+" nmap <silent> gr <Plug>(coc-references)
+" 
+" xmap <leader>f  <Plug>(coc-format-selected)
+" nmap <leader>f  <Plug>(coc-format-selected)
