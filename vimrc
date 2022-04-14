@@ -36,6 +36,8 @@ Plug 'ludovicchabant/vim-gutentags'
 Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 " 代码补全
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" 配色
+Plug 'morhetz/gruvbox'
 call plug#end()
 
 " ====== gutentags =======
@@ -111,11 +113,12 @@ noremap <leader>fn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
 noremap <leader>fp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
 
 " ======= coc =======
+source /Users/ganxianhui/.vim/coc-rc
 " 使用Tab和Shift-Tab选择补全
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+" inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+" inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 " 使用回车确认选择
-inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR>"
+" inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR>"
 
 " GoTo code navigation.
 " 暂不使用，有LeaderF和旧的ctags就够了
@@ -126,3 +129,7 @@ inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR
 " 
 " xmap <leader>f  <Plug>(coc-format-selected)
 " nmap <leader>f  <Plug>(coc-format-selected)
+
+" ======= gruvbox =======
+set background=dark
+autocmd vimenter * ++nested colorscheme gruvbox
