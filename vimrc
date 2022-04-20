@@ -11,7 +11,7 @@ set autoindent
 set cindent
 set tabstop=4
 set shiftwidth=4
-set expandtab
+set noexpandtab
 set tags=./.tags;,.tags
 " 启用持久性撤销
 set undofile
@@ -97,6 +97,8 @@ let g:Lf_ShortcutB = "<c-l>"
 nnoremap <silent><Leader>p :LeaderfFunction!<CR>
 " \ + d 开启tag查找
 nnoremap <silent><Leader>d :LeaderfTag<CR>
+" 查找光标下字符串
+noremap <Leader>rw :<C-U><C-R>=printf("Leaderf! rg %s", expand("<cword>"))<CR><CR>
 " 调用 ripgrep 全局查找字符串
 nnoremap <Leader>rg :Leaderf rg<Space>
 
@@ -108,12 +110,14 @@ let g:Lf_Gtagslabel = 'native-pygments'
 noremap <leader>fr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump h", expand("<cword>"))<CR><CR>
 " \ + f + r 查找当前光标所在字符的所有定义
 noremap <leader>fd :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump h", expand("<cword>"))<CR><CR>
+" \ + f + h 查找当前光标所在字符的.h
+noremap <Leader>fh :<C-U><C-R>=printf("Leaderf! rg %s -g *.h -g *.hpp", expand("<cword>"))<CR><CR>
 noremap <leader>fo :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
 noremap <leader>fn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
 noremap <leader>fp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
 
 " ======= coc =======
-source /Users/ganxianhui/.vim/coc-rc
+source $HOME/.vim/coc-rc
 " 使用Tab和Shift-Tab选择补全
 " inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 " inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
